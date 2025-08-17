@@ -1,0 +1,6 @@
+requirements.txt
+venv
+.env
+docker-compose.yml
+Dockerfile
+int_and_run.sh
