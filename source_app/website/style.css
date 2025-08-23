@@ -1,0 +1,4 @@
+/* Ẩn input-area của layout cũ nếu tồn tại */
+.input-area { display: none !important; }
+/* Giữ spacing đẹp cho vùng chat do script append */
+#chat-output { width:100%; max-width:900px; margin:0 auto; display:flex; flex-direction:column; gap:12px; }

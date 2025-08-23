@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tư vấn pháp luật Việt Nam</title>
+
+  <!-- ✅ GIỮ NGUYÊN ASSETS CŨ ĐỂ SCRIPT/CSS HOẠT ĐỘNG -->
+  <link rel="stylesheet" href="./style.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="./script.js" defer></script>
+
+  <style>
+    /* ====== UI MỚI (gốc từ file của bạn) ====== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { height: 100%; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      height: 100vh;
+      margin: 20px;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.10);
+      overflow: hidden;
+    }
+    .sidebar {
+      width: 320px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex; flex-direction: column;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      border-radius: 20px 0 0 20px;
+      overflow: hidden;
+    }
+    .logo-section {
+      padding: 30px 20px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      text-align: center;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border-radius: 20px 0 0 0;
+    }
+    .logo { width: 70px; height: 70px; margin: 0 auto 15px; background: rgba(255,255,255,0.2); border-radius: 20px; display:flex; align-items:center; justify-content:center; backdrop-filter: blur(10px); border: 2px solid rgba(255,255,255,0.3); }
+    .logo::before { content: "⚖️"; font-size: 28px; }
+    .logo-text { font-weight: 700; font-size: 20px; margin-bottom: 5px; }
+    .logo-subtitle { font-size: 12px; opacity: 0.9; font-weight: 400; }
+
+    .new-chat-btn { margin: 12px 20px; padding: 12px 18px; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border: none; border-radius: 12px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all .3s ease; box-shadow: 0 4px 20px rgba(102,126,234,.3); }
+    .new-chat-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(102,126,234,.4); }
+
+    .chat-history { flex: 1; padding: 0 20px; overflow-y: auto; }
+    .history-item { padding: 12px 15px; margin-bottom: 8px; background: rgba(102,126,234,0.1); border-radius: 10px; cursor: pointer; transition: all .2s ease; font-size: 13px; color: #4a5568; }
+    .history-item:hover { background: rgba(102,126,234,0.2); transform: translateX(5px); }
+
+    .sidebar-bottom { margin-top: auto; padding: 20px; border-top: 1px solid rgba(0, 0, 0, 0.1); }
+    .explore-btn { width: 100%; padding: 12px; background: transparent; border: 2px solid rgba(102,126,234,0.3); border-radius: 12px; cursor: pointer; display:flex; align-items:center; gap:12px; font-size:14px; font-weight: 600; color:#667eea; transition: all .3s ease; }
+    .explore-btn:hover { background: rgba(102,126,234,0.1); border-color: #667eea; }
+
+    .main-content { flex: 1; display:flex; flex-direction: column; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); border-radius: 0 20px 20px 0; overflow: hidden; }
+
+    .chat-area { flex: 1; display:flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px 40px 0; position: relative; }
+    .chat-area::before { content: ''; position:absolute; inset:0; background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23667eea" opacity="0.05"/><circle cx="75" cy="75" r="1" fill="%23764ba2" opacity="0.05"/><circle cx="50" cy="10" r="0.5" fill="%23667eea" opacity="0.03"/><circle cx="10" cy="90" r="0.5" fill="%23764ba2" opacity="0.03"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>'); pointer-events:none; }
+
+    .welcome-message { text-align:center; margin-bottom: 20px; z-index:1; }
+    .welcome-title { font-size: 32px; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; font-weight: 800; line-height: 1.2; }
+    .welcome-subtitle { font-size: 16px; color: #64748b; font-weight: 500; }
+
+    .suggestions { max-width: 900px; width: 100%; z-index:1; }
+    .suggestions-title { color: #f59e0b; margin-bottom: 16px; font-size: 16px; font-weight: 700; display:flex; align-items:center; gap:10px; }
+    .suggestions-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin-bottom: 12px; }
+    .suggestion-card { padding: 16px 18px; background: rgba(255,255,255,0.8); border: 2px solid rgba(102,126,234,0.1); border-radius: 14px; cursor: pointer; transition: all .3s ease; display:flex; align-items:center; gap: 12px; backdrop-filter: blur(10px); position:relative; overflow:hidden; }
+    .suggestion-card::before { content: ''; position:absolute; top:0; left:-100%; width:100%; height:100%; background: linear-gradient(90deg, transparent, rgba(102,126,234,0.1), transparent); transition: left .5s ease; }
+    .suggestion-card:hover::before { left: 100%; }
+    .suggestion-card:hover { background: rgba(255,255,255,0.95); border-color:#667eea; transform: translateY(-3px); box-shadow: 0 10px 25px rgba(102,126,234,.2); }
+    .suggestion-icon { width: 10px; height: 10px; border-radius:50%; flex-shrink:0; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+    .law-red { background: linear-gradient(135deg, #dc2626, #ef4444); }
+    .law-blue { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+    .law-green { background: linear-gradient(135deg, #059669, #10b981); }
+    .law-purple { background: linear-gradient(135deg, #7c3aed, #8b5cf6); }
+    .suggestion-text { font-weight: 600; color:#374151; font-size: 14px; line-height:1.4; }
+
+    .input-section { padding: 20px 30px 30px; background: rgba(248,250,252,0.8); backdrop-filter: blur(10px); border-top: 1px solid rgba(0,0,0,0.1); border-radius: 0 0 20px 0; }
+    .input-container { max-width: 900px; margin: 0 auto; position: relative; }
+    .chat-input { width: 100%; padding: 16px 80px 16px 18px; border: 2px solid rgba(102,126,234,0.2); border-radius: 20px; font-size: 16px; outline: none; transition: all .3s ease; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); font-weight: 500; }
+    .chat-input:focus { border-color:#667eea; box-shadow: 0 0 0 4px rgba(102,126,234,0.1); background: rgba(255,255,255,0.95); }
+    .chat-input::placeholder { color: #94a3b8; }
+    .send-btn { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 50%; color: white; cursor: pointer; display:flex; align-items:center; justify-content:center; transition: all .2s ease; box-shadow: 0 4px 15px rgba(102,126,234,0.3); }
+    .send-btn:hover { transform: translateY(-50%) scale(1.05); box-shadow: 0 6px 20px rgba(102,126,234,.4); }
+    .char-count { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); font-size: 12px; color: #94a3b8; font-weight: 600; }
+
+    .floating-elements { position: fixed; inset: 0; pointer-events:none; z-index:0; }
+    .floating-element { position:absolute; opacity: 0.1; animation: float 15s infinite ease-in-out; }
+    @keyframes float { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-30px) rotate(180deg); } }
+    .floating-element:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+    .floating-element:nth-child(2) { top: 60%; right: 15%; animation-delay: 5s; }
+    .floating-element:nth-child(3) { bottom: 30%; left: 20%; animation-delay: 10s; }
+
+    /* ====== LỚP TƯƠNG THÍCH (compat) ĐỂ MAP SELECTOR CŨ -> UI MỚI ====== */
+    /* Không thay đổi CSS cũ, chỉ bổ sung các class/id cũ vào đúng element mới */
+    .chat-container { display:flex; width:100%; }
+    .sidebar-header { display:flex; align-items:center; justify-content: space-between; padding: 8px 12px; }
+    .chatbot-header-law { display:flex; align-items:center; gap:8px; }
+    .chatbot-image-law { width: 28px; height: 28px; border-radius: 6px; object-fit: cover; }
+    .chat-box { width: 100%; max-width: 900px; margin: 0 auto; }
+    .input-area { display:none; } /* Ẩn input cũ nếu style.css có layout riêng */
+
+    /* Bảo đảm vùng chat hiển thị đẹp khi script cũ append vào #chat-output */
+    #chat-output { width:100%; max-width: 900px; margin: 0 auto; display:flex; flex-direction: column; gap: 12px; padding-bottom: 10px; }
+    .relevant-documents-container { width:100%; max-width: 900px; margin: 6px auto 0; }
+  </style>
+</head>
+<body>
+  <div class="floating-elements">
+    <div class="floating-element">⚖️</div>
+    <div class="floating-element">📚</div>
+    <div class="floating-element">🏛️</div>
+  </div>
+
+  <!-- ⚙️ WRAPPER CŨ: .chat-container để script cũ không lỗi -->
+  <div class="chat-container">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <!-- header tương thích -->
+      <div class="sidebar-header" style="flex-direction:column; align-items:center; gap:10px; padding-bottom:10px;">
+        <div style="display:flex; align-items:center; gap:18px; width:100%; justify-content:center;">
+          <button class="toggle-button" aria-label="Open sidebar" onclick="window.toggleSidebar && toggleSidebar()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-xl-heavy"><path fill-rule="evenodd" clip-rule="evenodd" d="M4 7a1 1 0 011-1h14a1 1 0 110 2H5a1 1 0 01-1-1zm0 5a1 1 0 011-1h14a1 1 0 110 2H5a1 1 0 01-1-1zm1 4a1 1 0 100 2h14a1 1 0 100-2H5z" fill="currentColor"/></svg>
+          </button>
+          <div class="chatbot-header-law" style="display:flex; align-items:center; gap:14px;">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcUPYJSyqL1oQaWJhXO87xsQpeS9yJRIXmzw&s" alt="Chatbot" class="chatbot-image-law" style="width:54px; height:54px; border-radius:14px; object-fit:cover; border:2.5px solid #fff; box-shadow:0 2px 8px rgba(102,126,234,0.18);" />
+            <h3 style="font-size:1.35rem; font-weight:800; letter-spacing:0.5px; color:#222; margin:0;">HỎI ĐÁP PHÁP LUẬT</h3>
+          </div>
+        </div>
+        <button id="new-chat" class="new-chat-btn" style="margin-top:12px; width:90%; max-width:220px; align-self:center;">Cuộc hỏi đáp mới +</button>
+      </div>
+
+      <!-- vùng nội dung sidebar tương thích với #sidebar và #chat-sessions -->
+      <div class="sidebar-content" id="sidebar">
+        <ul><!-- giữ chỗ cho script cũ nếu cần --></ul>
+        <div id="chat-sessions" class="chat-sessions chat-history">
+          <!-- bạn có thể seed vài item mẫu cho UI mới -->
+          <div class="history-item">Thủ tục ly hôn đơn phương</div>
+          <div class="history-item">Quyền lợi người lao động</div>
+          <div class="history-item">Hợp đồng mua bán nhà đất</div>
+          <div class="history-item">Thành lập doanh nghiệp</div>
+          <div class="history-item">Bảo hiểm xã hội</div>
+        </div>
+        <div class="sidebar-bottom">
+          <button class="explore-btn"><span>📖</span>Văn bản pháp luật</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main-content">
+      <div class="chat-area">
+        <div class="welcome-message">
+          <h1 class="welcome-title">Chào mừng đến với LawBot ⚖️</h1>
+          <p class="welcome-subtitle">Tư vấn pháp luật Việt Nam chính xác và đáng tin cậy</p>
+        </div>
+
+        <div class="suggestions">
+          <div class="suggestions-title"><span>💡</span>Các câu hỏi pháp luật phổ biến</div>
+          <div class="suggestions-grid">
+            <div class="suggestion-card" onclick="setSuggestion('Thủ tục đăng ký kết hôn cần những giấy tờ gì?')">
+              <div class="suggestion-icon law-red"></div>
+              <span class="suggestion-text">Thủ tục đăng ký kết hôn cần những giấy tờ gì?</span>
+            </div>
+            <div class="suggestion-card" onclick="setSuggestion('Quyền và nghĩa vụ của người lao động theo Bộ luật Lao động 2019?')">
+              <div class="suggestion-icon law-blue"></div>
+              <span class="suggestion-text">Quyền và nghĩa vụ của người lao động theo Bộ luật Lao động 2019?</span>
+            </div>
+            <div class="suggestion-card" onclick="setSuggestion('Hợp đồng mua bán nhà đất cần lưu ý những điều gì?')">
+              <div class="suggestion-icon law-green"></div>
+              <span class="suggestion-text">Hợp đồng mua bán nhà đất cần lưu ý những điều gì?</span>
+            </div>
+            <div class="suggestion-card" onclick="setSuggestion('Thủ tục thành lập công ty TNHH một thành viên như thế nào?')">
+              <div class="suggestion-icon law-purple"></div>
+              <span class="suggestion-text">Thủ tục thành lập công ty TNHH một thành viên như thế nào?</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ✅ KHỐI CHO SCRIPT CŨ APPEND NỘI DUNG CHAT -->
+        <div class="chat-box" id="chat-output"></div>
+        <div class="relevant-documents-container" id="relevant-documents-container"></div>
+      </div>
+
+      <!-- ✅ INPUT MỚI nhưng GẮN ID/CLASS CŨ để script.js hook vào -->
+      <div class="input-section">
+        <div class="input-container">
+          <!-- Thay vì textarea, dùng input đẹp — nhưng giữ id="user-query" cho script cũ -->
+          <input type="text" class="chat-input" placeholder="Hỏi về vấn đề pháp luật của bạn..." maxlength="1000" id="user-query" />
+          <span class="char-count">0/1000</span>
+          <button class="send-btn" id="send-button" type="button">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </button>
+          <span id="loading-indicator" class="loading-indicator" style="display:none;"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== JS tương thích nhỏ gọn: đếm ký tự + bridge với script cũ ====== -->
+  <script>
+    // Bridge: nếu script cũ mong textarea, ta vẫn dùng #user-query nhưng là <input>. Hầu hết thao tác (val(), keypress) vẫn OK.
+    const chatInput = document.getElementById('user-query');
+    const sendBtn = document.getElementById('send-button');
+    const charCount = document.querySelector('.char-count');
+
+    // Đếm ký tự + màu
+    function updateCharCount(val){
+      const count = val.length;
+      if (charCount) {
+        charCount.textContent = `${count}/1000`;
+        charCount.style.color = count > 800 ? '#dc2626' : (count > 600 ? '#f59e0b' : '#94a3b8');
+      }
+    }
+    chatInput.addEventListener('input', function(){ updateCharCount(this.value); });
+    chatInput.addEventListener('keypress', function(e){ if(e.key === 'Enter'){ sendBtn.click(); } });
+
+    // Hiệu ứng gửi (UI mới) — KHÔNG chặn logic gửi của script cũ
+    sendBtn.addEventListener('click', function(){
+      this.style.transform = 'translateY(-50%) scale(0.95)';
+      setTimeout(() => {
+        this.style.transform = 'translateY(-50%) scale(1.05)';
+        setTimeout(() => { this.style.transform = 'translateY(-50%) scale(1)'; }, 100);
+      }, 100);
+    });
+
+    // Hàm tiện ích cho suggestion cards
+    window.setSuggestion = function(text){
+      chatInput.value = text; updateCharCount(text); chatInput.focus();
+    }
+
+    // Bảo toàn API toggleSidebar nếu có trong script cũ; nếu không có thì thêm behavior đơn giản
+    if (typeof window.toggleSidebar !== 'function') {
+      window.toggleSidebar = function(){
+        const sb = document.querySelector('.sidebar');
+        if(!sb) return; sb.style.display = (sb.style.display === 'none' ? 'flex' : 'none');
+      }
+    }
+
+    // Nếu script cũ disable input/btn lúc đầu, ta bảo đảm bật lên khi DOM sẵn sàng
+    document.addEventListener('DOMContentLoaded', function(){
+      chatInput.removeAttribute('disabled');
+      sendBtn.removeAttribute('disabled');
+    });
+  </script>
+</body>
+</html>
